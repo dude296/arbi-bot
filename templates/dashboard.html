@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ArbiBot Dashboard</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; background: #f9f9f9; }
+    h1 { color: #333; }
+    .match { background: #fff; margin: 10px 0; padding: 10px; border-radius: 5px; box-shadow: 0 0 5px #ccc; }
+    .match a { color: #0077cc; text-decoration: none; }
+    .match a:hover { text-decoration: underline; }
+    .meta { font-size: 0.9em; color: #666; }
+  </style>
+</head>
+<body>
+  <h1>🔍 ArbiBot Live Matches</h1>
+  {% for match in matches %}
+    <div class="match">
+      <div><strong>Buyer:</strong> <a href="{{ match.buyer.url }}">{{ match.buyer.title }}</a> <span class="meta">[u/{{ match.buyer.author }}]</span></div>
+      <div><strong>Seller:</strong> <a href="{{ match.seller.url }}">{{ match.seller.title }}</a> <span class="meta">[u/{{ match.seller.author }}]</span></div>
+      <div class="meta">Keywords: {{ match.shared }}</div>
+    </div>
+  {% else %}
+    <p>No matches found.</p>
+  {% endfor %}
+</body>
+</html>
