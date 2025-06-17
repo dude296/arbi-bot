@@ -1,5 +1,3 @@
-# 🎞 ArbiBot — Reddit Buyer-Seller Matcher (Standalone Project)
-
 import os
 import praw
 import re
@@ -16,6 +14,7 @@ REDDIT_CLIENT_SECRET = os.getenv("REDDIT_CLIENT_SECRET")
 REDDIT_USER_AGENT = os.getenv("REDDIT_USER_AGENT") or "arbi-bot/1.0"
 REDDIT_USERNAME = os.getenv("REDDIT_USERNAME")
 REDDIT_PASSWORD = os.getenv("REDDIT_PASSWORD")
+PAYPAL_TIP_LINK = os.getenv("PAYPAL_TIP_LINK", "https://paypal.me/davidnitsan")
 
 # Initialize Reddit client with login for messaging
 reddit = praw.Reddit(
@@ -57,14 +56,14 @@ for sub in SUBREDDITS:
 
 print(f"\n🔍 Found {len(buyers)} buyers and {len(sellers)} sellers.")
 
-# Match logic
+# Match logic with word length condition
 matches = []
 for b in buyers:
-    b_words = set(re.findall(r"\w+", b["title"].lower()))
+    b_words = set(w for w in re.findall(r"\w+", b["title"].lower()) if len(w) >= 3)
     for s in sellers:
-        s_words = set(re.findall(r"\w+", s["title"].lower()))
+        s_words = set(w for w in re.findall(r"\w+", s["title"].lower()) if len(w) >= 3)
         shared = b_words & s_words
-        if len(shared) >= 3:
+        if len(shared) >= 3 and any(len(w) >= 4 for w in shared):
             matches.append({"buyer": b, "seller": s, "shared": list(shared)})
 
 # Save matches to file for dashboard
@@ -104,7 +103,7 @@ Check this out from u/{s['author']}:
 🔗 {s['url']}
 
 If this match helped you, consider sending us a $2 tip 🙏  
-➡️ https://paypal.me/davidnitsan
+➡️ {PAYPAL_TIP_LINK}
 
 Thanks for keeping Reddit commerce awesome!
 """
@@ -121,7 +120,7 @@ Their post:
 🔹 {b['title']}
 🔗 {b['url']}
 
-You can thank us later at https://paypal.me/davidnitsan if it helped :)
+You can thank us later at {PAYPAL_TIP_LINK} if it helped :)
 Cheers from ArbiBot 🤖
 """
         )
